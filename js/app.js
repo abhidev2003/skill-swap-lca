@@ -150,23 +150,90 @@ const components = {
             </div>
         `;
     },
-    discover: () => `
-        <div class="fade-in" style="text-align: center; margin-top: 4rem;">
-            <h1>Discovery Mode</h1>
-            <p>Expanding the circle...</p>
-            <button class="btn" onclick="app.navigateTo('login')" style="margin-top: 1rem;">Logout</button>
-        </div>
-    `
-};
+    discover: () => {
+        // Mock Community Data
+        const community = [
+            { name: 'Elena', role: 'Designer', teach: ['UI/UX'], learn: ['React'], color: '#f472b6' },
+            { name: 'Marcus', role: 'Developer', teach: ['Node.js'], learn: ['Piano'], color: '#3b82f6' },
+            { name: 'Priya', role: 'Musician', teach: ['Violin'], learn: ['French'], color: '#10b981' },
+            { name: 'Chen', role: 'Artist', teach: ['Drawing'], learn: ['Marketing'], color: '#f59e0b' },
+            { name: 'Sarah', role: 'Engineer', teach: ['Python'], learn: ['Design'], color: '#ef4444' }, // Part of circle
+            { name: 'David', role: 'Teacher', teach: ['Spanish'], learn: ['Python'], color: '#8b5cf6' }  // Part of circle
+        ];
+
+        return `
+            <div class="fade-in" style="padding-bottom: 4rem;">
+                <div style="text-align: center; margin-bottom: 3rem;">
+                    <h1>Explore Community</h1>
+                    <p style="color: var(--text-secondary);">Find swap partners beyond your direct matches.</p>
+                    <button class="btn" onclick="app.simulateCircleSwap()" style="margin-top: 1.5rem; background: linear-gradient(135deg, #a855f7, #ec4899); border: none;">
+                        <span class="material-symbols-rounded" style="vertical-align: middle; margin-right: 0.5rem;">autorenew</span>
+                        Simulate 3-Way Swap
+                    </button>
+                </div>
+
+                <!-- 3-Way Overlay (Hidden by default) -->
+                <div id="circle-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 100; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+                    <h2 style="margin-bottom: 2rem; color: #a855f7;">✨ Circle Swap Found! ✨</h2>
+                    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                        <!-- You -->
+                        <div style="text-align: center;">
+                            <div style="width: 80px; height: 80px; background: #64748b; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 4px solid #a855f7;">YOU</div>
+                            <p style="color: var(--text-secondary);">Teach: JS</p>
+                        </div>
+                        <span class="material-symbols-rounded" style="color: white; font-size: 32px;">arrow_forward</span>
+                        
+                        <!-- Alex -->
+                        <div style="text-align: center;">
+                             <div style="width: 80px; height: 80px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">Alex</div>
+                             <p style="color: var(--text-secondary);">Teach: Design</p>
+                        </div>
+                         <span class="material-symbols-rounded" style="color: white; font-size: 32px;">arrow_forward</span>
+
+                        <!-- Sarah -->
+                        <div style="text-align: center;">
+                             <div style="width: 80px; height: 80px; background: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">Sarah</div>
+                             <p style="color: var(--text-secondary);">Teach: Python</p>
+                        </div>
+                         <span class="material-symbols-rounded" style="color: white; font-size: 32px;">arrow_forward</span>
+
+                        <!-- Back to You -->
+                         <div style="text-align: center; opacity: 0.5;">
+                            <div style="width: 60px; height: 60px; background: #64748b; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 2px dashed #a855f7;">YOU</div>
+                            <p style="font-size: 0.875rem;">Learn: Python</p>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="document.getElementById('circle-overlay').style.display='none'" style="margin-top: 3rem;">Close Simulation</button>
+                </div>
+
+                <!-- Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+                    ${community.map(u => `
+                        <div class="glass-panel" style="padding: 1.5rem; text-align: center; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <div style="width: 60px; height: 60px; background: ${u.color}; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">${u.name[0]}</div>
+                            <h3 style="margin-bottom: 0.25rem;">${u.name}</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">${u.role}</p>
+                            <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                <span style="font-size: 0.75rem; background: rgba(255,255,255,0.1); padding: 0.25rem 0.5rem; border-radius: 4px;">Teaches ${u.teach[0]}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                 <div style="text-align: center; margin-top: 4rem;">
+                     <button class="btn" onclick="app.navigateTo('login')" style="background: transparent; border: 1px solid rgba(255,255,255,0.2);">Logout</button>
+                 </div>
+            </div>
+        `;
+    }
 
 // Logic Helpers
 function handleLogin(e) {
-    e.preventDefault();
-    const username = document.getElementById('username').value;
-    if (username) {
-        state.user = { name: username, skills: { known: ['JavaScript'], wanted: [] } };
-        navigateTo('onboarding');
-    }
+        e.preventDefault();
+const username = document.getElementById('username').value;
+if (username) {
+    state.user = { name: username, skills: { known: ['JavaScript'], wanted: [] } };
+    navigateTo('onboarding');
+}
 }
 
 // Main Render Function
@@ -195,7 +262,7 @@ function render() {
                         const tag = document.createElement('span');
                         tag.className = 'tag';
                         tag.style = "background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; color: #fbbf24;";
-                        tag.innerHTML = `${inputLearn.value} <span style="margin-left: 0.25rem; cursor: pointer; opacity: 0.7;">×</span>`;
+                        tag.innerHTML = `${inputLearn.value} <span style="margin-left: 0.25rem; cursor: pointer; opacity: 0.7;" onclick="this.parentElement.remove()">×</span>`;
                         document.getElementById('list-learn').appendChild(tag);
                         inputLearn.value = '';
                     }
@@ -209,7 +276,7 @@ function render() {
                         const tag = document.createElement('span');
                         tag.className = 'tag';
                         tag.style = "background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; color: #10b981;"; // Green style
-                        tag.innerHTML = `${inputTeach.value} <span style="margin-left: 0.25rem; cursor: pointer; opacity: 0.7;">×</span>`;
+                        tag.innerHTML = `${inputTeach.value} <span style="margin-left: 0.25rem; cursor: pointer; opacity: 0.7;" onclick="this.parentElement.remove()">×</span>`;
                         document.getElementById('list-teach').appendChild(tag);
                         inputTeach.value = '';
                     }
@@ -228,6 +295,10 @@ window.app = {
         console.log(`Swiped ${direction}`);
         state.matchIndex = (state.matchIndex || 0) + 1;
         render(); // Re-render to show next card
+    },
+    simulateCircleSwap: () => {
+        const overlay = document.getElementById('circle-overlay');
+        if (overlay) overlay.style.display = 'flex';
     },
     navigateTo,
     state
